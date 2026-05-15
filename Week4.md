@@ -293,6 +293,9 @@ Fixed pipelines are more testable, reproducible, and debuggable. Use dynamic dec
 **Structured errors over generic errors**
 `"Operation failed"` is an anti-pattern. Structured errors include `errorCategory`, `isRetryable`, what was attempted, partial results, and alternative approaches. The coordinator needs this to recover intelligently.
 
+**"No results" ≠ "search failed"**
+An empty result set (`{"results": []}`) means the search succeeded and found nothing — a valid, informative outcome. A timeout or error means the search didn't run. The coordinator must treat these differently: accept the empty result as coverage, retry or escalate the failure.
+
 **Aggregate accuracy can hide segment failures**
 97% overall accuracy can coexist with 58% accuracy on a specific document type. Always analyze by document type and by field, not just overall.
 
