@@ -1,7 +1,54 @@
 # Claude Certified Architect — Foundations
 ## 4-Week Team Study Plan
 
-This plan follows a **narrative learning order** — concepts build on each other rather than mirroring the guide's chapter sequence. Each week has a central theme, with daily sessions designed for ~60–90 minutes of focused study. Each week has its own detailed guide with per-concept exercises, discussion questions, and a capstone project.
+This plan follows a **narrative learning order** — concepts build on each other rather than mirroring the guide's chapter sequence. Each week has a central theme, with daily sessions designed for ~60–90 minutes of focused study. Each week has its own detailed guide with per-concept exercises, extension questions, and a capstone project.
+
+---
+
+## How to Use This Study Guide
+
+### Learning order
+
+The guide's chapters are organized by technology (API, tools, Agent SDK, MCP, etc.), which makes a good reference but a poor learning sequence. This study plan reorders the material so that each concept builds directly on what came before — starting with how to talk to Claude, then how to give it abilities, then how to build agents, and so on. Resist the urge to skip ahead; the later weeks assume the earlier ones.
+
+### Session format
+
+Each daily session covers one topic and is designed for **60–90 minutes**. A suggested structure for each session:
+
+1. Read the day's section individually before the group meets (~20 min)
+2. Work through the Quick Checks and Exercises together (~30–40 min)
+3. Debrief as a group, focusing on where answers diverged (~15–20 min)
+
+### Question types
+
+Each day contains several types of questions, each with a different purpose:
+
+**Quick Checks** are short comprehension questions attached to individual concepts. They're designed to be answered mentally or aloud in under a minute — the goal is to catch misunderstandings before they compound. If a Quick Check stumps you, re-read the relevant concept before moving on.
+
+**Exercises** ask you to produce something: write a tool definition, sketch a message array, design a schema. They're meant to take 10–20 minutes and work best when done individually first, then compared with the group. There's rarely one correct answer — the discussion of different approaches is the point.
+
+**Extension Questions** appear at the end of each day. These are open-ended and deliberately harder than what the exam will ask. They're optional — use them if your session has time to spare, or as individual take-home prompts for anyone who wants to go deeper. Don't feel obligated to get through all of them.
+
+### Review days (Days 5, 10, 15, 20)
+
+Every fifth day is a review session built around exam-style practice. Each review day in Weeks 1–3 includes:
+
+- **Sample Exam Questions** — a set of multiple-choice questions in the same format as the real exam, presented without answers. Try these individually and commit to an answer before discussing.
+- **Answers** — the correct answer and a full explanation of why each wrong answer fails. The reasoning matters as much as the answer itself; focus especially on questions where you picked a plausible-sounding wrong answer.
+- **Domain Notes review** — the guide's Part II has focused notes for each exam domain. The review day specifies which to read.
+
+Week 4's Day 19 is the full 60-question practice test from the guide. Treat it like the real exam: work individually and time yourself (roughly 90 minutes for 60 questions).
+
+### Weekly capstones
+
+Each week ends with a multi-part capstone exercise that ties the week's themes into a single realistic scenario. Capstones are longer and more open-ended than the daily exercises — they're designed to be worked through over 60–90 minutes, either as a group or individually. There are no single correct answers; the goal is to practice making and defending architectural decisions.
+
+### Exam logistics
+
+- Passing score: **720 out of 1000**
+- No guessing penalty — answer every question
+- 4 of 8 possible scenarios are randomly selected on the real exam
+- Format: multiple choice, one correct answer out of four
 
 ---
 
