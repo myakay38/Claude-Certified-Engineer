@@ -231,6 +231,8 @@ This is the Friday morning group session. Complete the Sample Exam Questions ind
 1. Work through Exam Questions 7–9 as a group. For Question 9 in particular, walk through why each wrong answer is wrong — the reasoning is as important as the correct choice.
 2. Review Domain 1 (Agent Architecture) and Domain 2 (Tool Design and MCP) notes in Part II.
 
+> **Note — Domain 2 coverage gap:** Questions 7–9 all test multi-agent orchestration (Domain 1). None of the sample exam questions specifically test Domain 2 (Tool Design and MCP Integration, 18% of the exam). The MCP concepts from Day 9 — tool vs. resource vs. prompt, `.mcp.json` vs. `~/.claude.json`, structured `isError` responses, and duplicate tool names across servers — are not covered by any sample question. Pay extra attention to the Domain 2 notes in Part II, and treat Day 9's exercises as your primary exam practice for this domain.
+
 ---
 
 ## Sample Exam Questions
