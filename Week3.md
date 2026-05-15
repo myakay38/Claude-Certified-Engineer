@@ -52,7 +52,7 @@ Project commands in `.claude/commands/` (or `.claude/skills/`) are version-contr
 
 ---
 
-### Day 11 Discussion Question
+### Extension Question
 A company decides to put all Claude Code configuration in the root CLAUDE.md — coding standards, API conventions, testing requirements, deployment rules, and React patterns all in one 800-line file. What are the practical problems with this approach, and how would you restructure it using the tools covered today?
 
 ---
@@ -118,7 +118,7 @@ The same Claude session that generated code retains its reasoning context and is
 
 ---
 
-### Day 12 Discussion Question
+### Extension Question
 Your CI pipeline re-reviews a PR after every new commit, but developers complain that Claude keeps flagging the same issues that were already addressed in the previous review. What is causing this, and how do you fix it?
 
 ---
@@ -184,7 +184,7 @@ When a search returns multiple customer records for the same name or email, the 
 
 ---
 
-### Day 13 Discussion Question
+### Extension Question
 An agent is configured with this escalation instruction: "Escalate to a human if you are not confident you can resolve the issue." After two weeks in production, the escalation rate is 60% — far above the 20% target. What is wrong with this instruction, and how would you rewrite it?
 
 ---
@@ -250,7 +250,7 @@ When a subagent fails and the coordinator continues with partial results, the fi
 
 ---
 
-### Day 14 Discussion Question
+### Extension Question
 A colleague argues: "We should just wrap every subagent in a try-catch and return an empty result on any failure. It keeps the coordinator simple." Explain specifically why this is an anti-pattern and what it costs you in practice.
 
 ---
@@ -263,7 +263,6 @@ Consolidate the week's material through exam scenarios and team reflection.
 **Agenda:**
 1. Work through Exam Questions 4–6 (Claude Code scenarios) and 10–11 (CI/CD scenarios) as a group.
 2. Review Domain 3 (Claude Code Configuration and Workflows) and Domain 5 (Context Management and Reliability) notes in Part II of the guide.
-3. Team exercise: map your current work processes to Claude Code workflows. Where would planning mode apply? Where would CI integration add real value? Where would hooks enforce rules you're currently relying on prompt instructions for?
 
 ---
 

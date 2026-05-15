@@ -58,7 +58,7 @@ The context window holds everything: system prompt, full message history, tool d
 
 ---
 
-### Day 1 Discussion Question
+### Extension Question
 If Claude has no memory between calls, what are the implications for building a multi-turn customer support agent? What does your application code need to do that a human agent's brain does automatically?
 
 ---
@@ -104,7 +104,7 @@ An LLM picks tools based on their descriptions. When descriptions are vague or o
 
 ---
 
-### Day 2 Discussion Question
+### Extension Question
 You have a customer support agent with four tools: `get_customer`, `lookup_order`, `process_refund`, and `escalate_to_human`. How would you write the description for `get_customer` to make it clear when it should and shouldn't be used, and how would you distinguish it from `lookup_order`?
 
 ---
@@ -154,7 +154,7 @@ Before acting on an underspecified request, Claude asks targeted clarifying ques
 
 ---
 
-### Day 3 Discussion Question
+### Extension Question
 A colleague argues: "Few-shot examples just waste tokens — Claude already knows how to format JSON." When would you agree with them, and when would you push back? What's the specific failure mode that few-shot examples address that Claude's training alone doesn't?
 
 ---
@@ -203,7 +203,7 @@ A schema can be designed to extract both a stated value and a computed value, al
 
 ---
 
-### Day 4 Discussion Question
+### Extension Question
 A data extraction system achieves 97% accuracy overall — but when you break it down by document type, accuracy on handwritten invoices is only 58%. The schema is correctly designed. What does this tell you about where to focus your improvement efforts, and what techniques from this week would you apply?
 
 ---
@@ -216,7 +216,6 @@ Consolidate the week's material by working through exam-style scenarios together
 **Agenda:**
 1. Work through Exam Questions 1–3 from the guide as a group. For each, have someone argue for the wrong answers before revealing the correct one.
 2. Review Domain 4 notes (Prompt Engineering and Structured Output) in Part II of the guide.
-3. Each team member identifies one concept from this week they want to revisit before Week 2.
 
 ---
 

@@ -50,7 +50,7 @@ Three patterns that seem reasonable but reliably fail: parsing assistant text fo
 
 ---
 
-### Day 6 Discussion Question
+### Extension Question
 Your agent is stuck in a loop: it keeps calling `lookup_order`, getting a result, and then calling `lookup_order` again with the same arguments. What are three possible root causes, and how would you diagnose each?
 
 ---
@@ -109,7 +109,7 @@ The coordinator is responsible for breaking a high-level goal into well-scoped s
 
 ---
 
-### Day 7 Discussion Question
+### Extension Question
 Your multi-agent research system produces a final report that covers five of the seven required topics. The web search subagent, document analysis subagent, and synthesis subagent all report success. Where in the system do you look first, and what would tell you whether the problem is decomposition, context passing, or something else?
 
 ---
@@ -163,7 +163,7 @@ The rule is simple: when failure has financial, legal, or safety consequences, u
 
 ---
 
-### Day 8 Discussion Question
+### Extension Question
 A team proposes using hooks for everything — every business rule, every preference, every formatting guideline — arguing that determinism is always better than probability. What is the practical downside of this approach, and how would you decide where to draw the line?
 
 ---
@@ -217,7 +217,7 @@ Resources let the agent read context without taking action. A content catalog or
 
 ---
 
-### Day 9 Discussion Question
+### Extension Question
 Your team has built a custom internal MCP server for a unique HR workflow. A community MCP server for Slack also exists. How do you decide which to build vs. which to adopt, and what are the maintenance implications of each choice?
 
 ---
@@ -230,7 +230,6 @@ Consolidate the week's material through exam scenarios and team reflection.
 **Agenda:**
 1. Work through Exam Questions 7–9 from the guide as a group. For Question 9 in particular, walk through why each wrong answer is wrong — the reasoning is as important as the correct choice.
 2. Review Domain 1 (Agent Architecture) and Domain 2 (Tool Design and MCP) notes in Part II.
-3. Each team member writes one hook — either a `PreToolUse` or `PostToolUse` — for a scenario from their current work. Share and discuss.
 
 ---
 

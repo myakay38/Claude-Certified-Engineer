@@ -68,7 +68,7 @@ When two sources give different values for the same metric, the correct behavior
 
 ---
 
-### Day 16 Discussion Question
+### Extension Question
 Your multi-agent system produces a 20-page research report. An executive challenges a specific statistic on page 14. How does your provenance architecture let you trace that statistic back to its original source, and what would have happened to that traceability in a system that summarized rather than preserved raw subagent outputs?
 
 ---
@@ -125,7 +125,7 @@ Use fixed pipelines when the task structure is predictable, steps are known in a
 
 ---
 
-### Day 17 Discussion Question
+### Extension Question
 A colleague argues that dynamic decomposition is always better than fixed pipelines because it's "more intelligent" and "adapts to the situation." When would you push back on this, and what are the practical costs of dynamic decomposition that fixed pipelines avoid?
 
 ---
@@ -197,7 +197,7 @@ Edit requires a unique text match to make a change. When Edit fails because the 
 
 ---
 
-### Day 18 Discussion Question
+### Extension Question
 The incremental investigation strategy (Grep → Read → Grep → Read) seems slower than just reading all potentially relevant files at once. When is the incremental approach actually faster, and when does reading all files upfront make more sense?
 
 ---
@@ -234,13 +234,7 @@ The final session is learner-driven. Use your Day 19 results to decide where to 
 
 ### Suggested Structure
 
-**First 30 minutes — team debrief**
-Each team member shares:
-- Their two weakest domains from Day 19
-- One concept from this course that changed how they think about building AI systems
-- One thing they'll do differently in their current work as a result
-
-**Next 45 minutes — targeted revision**
+**First 30 minutes — targeted revision**
 Work through exam questions from your weakest domains. Use the Domain notes in Part II as a reference. Prioritize questions where you picked a plausible-sounding wrong answer — understanding why it's wrong is as important as knowing the right answer.
 
 **Final 15 minutes — exam day checklist**
