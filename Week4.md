@@ -231,7 +231,32 @@ This is the Friday morning group session. Bring your Day 19 practice test result
 
 ---
 
-### Suggested Structure
+## Sample Exam Question
+
+Work through this on your own before the Friday morning meeting. Commit to an answer before checking the answer below.
+
+### Question 12 — Scenario: Multi-file Code Review
+
+**Situation:** A pull request changes 14 files in an inventory tracking module. A single-pass review of all files produces inconsistent results: detailed comments for some files but superficial ones for others, missed obvious bugs, and contradictory feedback (a pattern is flagged as problematic in one file but approved in identical code in another file).
+
+**How should you restructure the review?**
+
+- A) Split into focused passes: analyze each file individually for local issues, then run a separate integration pass for cross-file data flows
+- B) Require developers to split large PRs into submissions of 3–4 files
+- C) Switch to a higher-tier model with a larger context window to review all 14 files in one pass
+- D) Run three independent full-PR review passes and report only issues found in at least two runs
+
+---
+
+## Answer
+
+### Question 12 — Correct answer: A
+
+Focused passes directly address the root cause: attention dilution when processing many files at once. Per-file analysis ensures consistent depth across all 14 files, and a separate integration pass catches cross-file issues (type inconsistencies, data flow bugs) that per-file analysis would miss. Requiring smaller PRs (B) shifts the burden to developers without improving the review system itself. A larger context window (C) is a misconception — larger context does not fix attention quality, it just means more content competes for the same attention. Running three full passes and requiring consensus (D) suppresses real bugs by design: a genuine bug caught in two of three passes would still be discarded.
+
+---
+
+## Suggested Structure
 
 **First 30 minutes — weak domain review**
 Compare domain scores as a group. For your lowest-scoring domains, work through the questions you missed together, tracing the reasoning in the guide. Prioritize questions where you picked a plausible-sounding wrong answer.
