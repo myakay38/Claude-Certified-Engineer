@@ -233,6 +233,69 @@ Consolidate the week's material through exam scenarios and team reflection.
 
 ---
 
+## Sample Exam Questions
+
+Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+
+### Question 7 — Scenario: Multi-Agent Research System
+
+**Situation:** A system researches "AI impact on creative industries," but every report covers only visual art. Subagent logs show the coordinator assigned three subtasks: "AI in digital art," "AI in graphic design," and "AI in photography." All subagents completed successfully.
+
+**What is the most likely root cause?**
+
+- A) The synthesis agent lacks instructions to detect coverage gaps
+- B) The coordinator's task decomposition is too narrow, missing entire domains
+- C) The web search agent's queries are not broad enough
+- D) The document analysis agent is filtering out non-visual sources
+
+---
+
+### Question 8 — Scenario: Multi-Agent Research System
+
+**Situation:** A web-search subagent times out while researching a complex topic. You need to design how error information flows back to the coordinator.
+
+**Which error propagation approach best enables intelligent recovery?**
+
+- A) Return structured error context: failure type, the attempted query, any partial results, and suggested alternative approaches
+- B) Implement automatic retries with exponential backoff inside the subagent, then return a generic "search unavailable" status
+- C) Catch the timeout inside the subagent and return an empty result set marked as success
+- D) Propagate the raw timeout exception to a top-level handler that terminates the entire workflow
+
+---
+
+### Question 9 — Scenario: Multi-Agent Research System
+
+**Situation:** When the synthesis agent needs to verify a claim, it hands control back to the coordinator, which calls the web-search agent, then re-runs synthesis. This adds 2–3 round trips per task and increases latency by 40%. Analysis shows 85% of these checks are simple fact verifications (dates, names, statistics) while 15% require deeper investigation.
+
+**How do you reduce overhead while maintaining reliability?**
+
+- A) Give the synthesis agent a limited `verify_fact` tool for simple checks; continue routing complex verification through the coordinator
+- B) Accumulate all verification needs and return them to the coordinator as a batch at the end of synthesis
+- C) Give the synthesis agent full access to all web-search tools
+- D) Proactively cache additional context around each source at research time
+
+---
+
+## Answers
+
+### Question 7 — Correct answer: B
+
+All subagents completed successfully — they executed their assigned tasks correctly. The problem is what they were assigned. The coordinator decomposed "creative industries" exclusively into visual art subtopics, leaving music, literature, film, and other domains completely uncovered. The synthesis agent (A) cannot synthesize what was never researched. The web search agent (C) and document analysis agent (D) performed correctly within their given scope.
+
+---
+
+### Question 8 — Correct answer: A
+
+Structured error context gives the coordinator the information it needs to make an intelligent recovery decision: retry with a modified query, use an alternative source, continue with partial results, or escalate? A generic "search unavailable" status (B) hides all of this behind a useless label. Returning an empty success result (C) masks the failure entirely — the coordinator thinks the search found nothing, rather than that it failed. Terminating the whole workflow (D) discards all partial results from other subagents unnecessarily.
+
+---
+
+### Question 9 — Correct answer: A
+
+This is the principle of least privilege applied to agent design: give the synthesis agent exactly the capability it needs for the 85% common case (simple fact checks via `verify_fact`), while preserving the coordinator-mediated path for the 15% requiring deeper investigation. Batching all verifications (B) creates a blocking dependency — later synthesis steps may depend on facts verified earlier. Full web-search access (C) breaks the synthesis agent's specialization and makes it harder to reason about its behavior. Speculative caching (D) cannot reliably predict which context will be needed.
+
+---
+
 ## Week 2 Capstone Exercise
 
 **Scenario: Multi-Agent Customer Support System**

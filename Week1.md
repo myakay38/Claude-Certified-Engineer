@@ -219,6 +219,69 @@ Consolidate the week's material by working through exam-style scenarios together
 
 ---
 
+## Sample Exam Questions
+
+Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+
+### Question 1 — Scenario: Customer Support Agent
+
+**Situation:** Data shows that in 12% of cases the agent skips `get_customer` and calls `lookup_order` using only the customer's name, which leads to incorrect refunds.
+
+**Which change is most effective?**
+
+- A) Add a programmatic precondition that blocks `lookup_order` and `process_refund` until a verified customer ID is obtained from `get_customer`
+- B) Improve the system prompt to emphasize the correct tool order
+- C) Add few-shot examples demonstrating the correct sequence
+- D) Implement a routing classifier to detect order-related queries
+
+---
+
+### Question 2 — Scenario: Customer Support Agent
+
+**Situation:** The agent often calls `get_customer` instead of `lookup_order` for order-related questions. Both tools have minimal, nearly identical descriptions.
+
+**What is the first step to fix this?**
+
+- A) Add few-shot examples showing correct tool selection
+- B) Expand each tool's description with input formats, example queries, and clear boundaries for when to use each
+- C) Add a routing layer that pre-classifies user intent before passing to the agent
+- D) Merge the two tools into one unified lookup tool
+
+---
+
+### Question 3 — Scenario: Customer Support Agent
+
+**Situation:** The agent resolves only 55% of issues against a target of 80%. It escalates simple cases and attempts to autonomously handle complex policy exceptions it shouldn't touch.
+
+**How do you improve escalation calibration?**
+
+- A) Add explicit escalation criteria with few-shot examples directly in the system prompt
+- B) Add a self-rated confidence score (1–10) and escalate automatically below a threshold
+- C) Train a separate classifier on historical escalation data
+- D) Use sentiment analysis to detect frustrated customers and escalate those cases
+
+---
+
+## Answers
+
+### Question 1 — Correct answer: A
+
+A programmatic precondition provides a **deterministic** guarantee that `get_customer` runs before `lookup_order` and `process_refund`. Prompt improvements (B) and few-shot examples (C) are probabilistic — they reduce violations but cannot eliminate them, as the 12% failure rate demonstrates. A routing classifier (D) addresses intent classification, not tool ordering enforcement.
+
+---
+
+### Question 2 — Correct answer: B
+
+Tool descriptions are the model's **primary selection mechanism** — the LLM picks tools based on their descriptions, not routing code. Minimal or overlapping descriptions are the root cause of misrouting, making this the highest-impact, lowest-effort fix. Few-shot examples (A) add tokens without addressing why the model is confused. A routing layer (C) is overengineering. Merging the tools (D) removes a useful distinction and requires more work than simply improving descriptions.
+
+---
+
+### Question 3 — Correct answer: A
+
+Explicit escalation criteria with few-shot examples directly address the root cause: the agent has unclear decision boundaries. Self-rated confidence (B) is unreliable — models can be confidently wrong, and confidence scores are poorly calibrated for this task. A trained classifier (C) is overengineering that requires labeled historical data. Sentiment analysis (D) conflates customer mood with case complexity; a frustrated customer asking a simple question should not be escalated.
+
+---
+
 ## Week 1 Capstone Exercise
 
 **Scenario: Invoice Extraction System**

@@ -266,6 +266,107 @@ Consolidate the week's material through exam scenarios and team reflection.
 
 ---
 
+## Sample Exam Questions
+
+Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+
+### Question 4 — Scenario: Code Generation with Claude Code
+
+**Situation:** You need a custom `/review` command for standard code review that must be available to the entire team automatically when they clone the repository.
+
+**Where should you create the command file?**
+
+- A) `.claude/commands/` in the project repository
+- B) `~/.claude/commands/` on your local machine
+- C) The root `CLAUDE.md` file
+- D) `.claude/config.json`
+
+---
+
+### Question 5 — Scenario: Code Generation with Claude Code
+
+**Situation:** You need to restructure a monolith into microservices. The task involves dozens of files and requires making non-obvious service boundary decisions.
+
+**What approach should you use?**
+
+- A) Planning mode: explore the codebase, understand dependencies, then design an approach for approval
+- B) Direct execution, working incrementally file by file
+- C) Direct execution with detailed up-front instructions covering all the files
+- D) Start with direct execution and switch to planning mode when it gets difficult
+
+---
+
+### Question 6 — Scenario: Code Generation with Claude Code
+
+**Situation:** A codebase has distinct conventions for React components, API routes, and database layers. Tests are co-located with source files throughout the repo. You want Claude Code to apply the right conventions automatically based on which file is being edited.
+
+**What approach should you use?**
+
+- A) `.claude/rules/` files with YAML frontmatter `paths` glob patterns
+- B) Put all conventions in the root `CLAUDE.md`
+- C) Create skills in `.claude/skills/` for each convention set
+- D) Add a `CLAUDE.md` file inside every directory
+
+---
+
+### Question 10 — Scenario: Claude Code for CI
+
+**Situation:** A CI pipeline runs `claude "Analyze this pull request for security issues"` but hangs indefinitely waiting for interactive input.
+
+**What is the correct fix?**
+
+- A) Use the `-p` flag: `claude -p "Analyze this pull request for security issues"`
+- B) Set the environment variable `CLAUDE_HEADLESS=true`
+- C) Redirect stdin from `/dev/null`
+- D) Use the `--batch` flag
+
+---
+
+### Question 11 — Scenario: Claude Code for CI
+
+**Situation:** A team runs two Claude-powered workflows: (1) a blocking pre-merge code review that developers wait on before merging, and (2) an overnight tech-debt report ready for morning review. A manager proposes moving both to the Message Batches API to save 50% on API costs.
+
+**How should you evaluate this proposal?**
+
+- A) Use batch processing for the tech-debt report only; keep real-time calls for pre-merge checks
+- B) Move both workflows to batch processing and poll for results
+- C) Keep real-time calls for both to avoid ordering issues in batch results
+- D) Move both to batch processing with an automatic fallback to real-time if a batch exceeds a time limit
+
+---
+
+## Answers
+
+### Question 4 — Correct answer: A
+
+Project commands in `.claude/commands/` are version-controlled and automatically available to every contributor who clones the repository — no manual setup required. `~/.claude/commands/` (B) is for personal commands that are not shared via version control. Root `CLAUDE.md` (C) contains instructions, not command definitions. `.claude/config.json` (D) does not exist as a valid command location.
+
+---
+
+### Question 5 — Correct answer: A
+
+Planning mode is designed precisely for this situation: large changes spanning many files, multiple viable approaches to service boundaries, and architectural decisions with long-term consequences. Direct execution (B, C) risks expensive rework if the wrong decomposition is chosen before the codebase is fully understood. Starting with direct execution (D) is reactive — by the time you realize planning is needed, partial changes may already be inconsistent with each other.
+
+---
+
+### Question 6 — Correct answer: A
+
+`.claude/rules/` files with `paths` glob patterns load conventions **only** when Claude is editing a file that matches the pattern. This handles test conventions (`**/*.test.ts`) that apply regardless of directory, and different rules for API routes vs. React components, all automatically. A monolithic root `CLAUDE.md` (B) loads all conventions always, wasting context tokens. Skills (C) require manual invocation — they're on-demand, not automatic. A `CLAUDE.md` in every directory (D) doesn't work well for conventions like test rules that apply across many scattered locations.
+
+---
+
+### Question 10 — Correct answer: A
+
+The `-p` (or `--print`) flag is the documented mechanism for running Claude Code non-interactively: it processes the prompt, prints to stdout, and exits without waiting for user input. `CLAUDE_HEADLESS=true` (B) is not a real environment variable. Redirecting stdin from `/dev/null` (C) is a Unix workaround that may cause other issues and is not the intended approach. `--batch` (D) does not exist as a Claude Code flag.
+
+---
+
+### Question 11 — Correct answer: A
+
+The Message Batches API offers 50% cost savings but provides no latency SLA — processing can take up to 24 hours. This makes it entirely unsuitable for the pre-merge check, where developers are actively waiting and even a 30-minute delay is unacceptable. The overnight tech-debt report has no such constraint and is a perfect fit for batch processing. Moving both to batch (B, D) breaks the pre-merge workflow. Keeping both synchronous (C) forgoes the available cost savings on the overnight workload.
+
+---
+
 ## Week 3 Capstone Exercise
 
 **Scenario: Production-Grade Code Review Pipeline**
