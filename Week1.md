@@ -211,17 +211,17 @@ A data extraction system achieves 97% accuracy overall — but when you break it
 ## Day 5 — Week 1 Review
 **Guide reference:** Exam Questions 1–3, Domain 4 notes (sections 4.1–4.4)
 
-Consolidate the week's material by working through exam-style scenarios together. Focus on the *reasoning* behind each answer, not just the correct choice.
+This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together. Focus on the *reasoning* behind each answer, not just the correct choice.
 
 **Agenda:**
-1. Work through Exam Questions 1–3 from the guide as a group. For each, have someone argue for the wrong answers before revealing the correct one.
+1. Work through Exam Questions 1–3 as a group. For each, have someone argue for the wrong answers before revealing the correct one.
 2. Review Domain 4 notes (Prompt Engineering and Structured Output) in Part II of the guide.
 
 ---
 
 ## Sample Exam Questions
 
-Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+Work through these on your own before the Friday morning meeting. Commit to an answer for each before checking the answers section below.
 
 ### Question 1 — Scenario: Customer Support Agent
 

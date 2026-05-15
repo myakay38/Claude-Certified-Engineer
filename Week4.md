@@ -205,17 +205,16 @@ The incremental investigation strategy (Grep → Read → Grep → Read) seems s
 ## Day 19 — Full Practice Exam (60 Questions)
 **Guide reference:** Practice Test section
 
-Work through the full 60-question practice test. Time yourselves: the real exam paces at roughly 1.5 minutes per question, so 60 questions should take approximately 90 minutes.
+Work through the full 60-question practice test on your own during the week. Time yourself — the real exam paces at roughly 1.5 minutes per question, so 60 questions should take approximately 90 minutes. Bring your results to the Friday morning meeting.
 
 **Instructions:**
-- Work individually for the first 60 minutes, then compare answers in pairs for the remaining 30 minutes.
-- For every question you disagree on, trace the reasoning in the guide before accepting either answer.
+- Work individually and without looking at the answers section.
 - Mark questions you found difficult — these are your revision targets for Day 20.
 
 **After completing the test:**
-- Tally scores by domain (Domains 1–5). Which domain had the most misses?
+- Tally your scores by domain (Domains 1–5). Which domain had the most misses?
 - Note which scenarios (Customer Support, Multi-agent Research, Claude Code, CI/CD, Structured Data) felt weakest.
-- Return to the relevant Domain notes in Part II for targeted revision.
+- Return to the relevant Domain notes in Part II for targeted revision before Friday.
 
 **Exam logistics reminder:**
 - Score of 720/1000 required to pass
@@ -228,14 +227,14 @@ Work through the full 60-question practice test. Time yourselves: the real exam 
 ## Day 20 — Final Review and Exam Readiness
 **Guide reference:** Full guide, focus on lowest-scoring domains from Day 19
 
-The final session is learner-driven. Use your Day 19 results to decide where to spend the time.
+This is the Friday morning group session. Bring your Day 19 practice test results — compare scores by domain as a group, then use the remaining time to work through the key distinctions before the exam.
 
 ---
 
 ### Suggested Structure
 
-**First 30 minutes — targeted revision**
-Work through exam questions from your weakest domains. Use the Domain notes in Part II as a reference. Prioritize questions where you picked a plausible-sounding wrong answer — understanding why it's wrong is as important as knowing the right answer.
+**First 30 minutes — weak domain review**
+Compare domain scores as a group. For your lowest-scoring domains, work through the questions you missed together, tracing the reasoning in the guide. Prioritize questions where you picked a plausible-sounding wrong answer.
 
 **Final 15 minutes — exam day checklist**
 

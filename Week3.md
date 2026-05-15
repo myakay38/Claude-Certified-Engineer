@@ -258,7 +258,7 @@ A colleague argues: "We should just wrap every subagent in a try-catch and retur
 ## Day 15 — Week 3 Review
 **Guide reference:** Exam Questions 4–6, 10–11, Domain 3 and Domain 5 notes
 
-Consolidate the week's material through exam scenarios and team reflection.
+This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together.
 
 **Agenda:**
 1. Work through Exam Questions 4–6 (Claude Code scenarios) and 10–11 (CI/CD scenarios) as a group.
@@ -268,7 +268,7 @@ Consolidate the week's material through exam scenarios and team reflection.
 
 ## Sample Exam Questions
 
-Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+Work through these on your own before the Friday morning meeting. Commit to an answer for each before checking the answers section below.
 
 ### Question 4 — Scenario: Code Generation with Claude Code
 

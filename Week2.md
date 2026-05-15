@@ -225,17 +225,17 @@ Your team has built a custom internal MCP server for a unique HR workflow. A com
 ## Day 10 — Week 2 Review
 **Guide reference:** Exam Questions 7–9, Domain 1 and Domain 2 notes
 
-Consolidate the week's material through exam scenarios and team reflection.
+This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together.
 
 **Agenda:**
-1. Work through Exam Questions 7–9 from the guide as a group. For Question 9 in particular, walk through why each wrong answer is wrong — the reasoning is as important as the correct choice.
+1. Work through Exam Questions 7–9 as a group. For Question 9 in particular, walk through why each wrong answer is wrong — the reasoning is as important as the correct choice.
 2. Review Domain 1 (Agent Architecture) and Domain 2 (Tool Design and MCP) notes in Part II.
 
 ---
 
 ## Sample Exam Questions
 
-Work through these individually before discussing as a group. Commit to an answer for each before checking the answers section below.
+Work through these on your own before the Friday morning meeting. Commit to an answer for each before checking the answers section below.
 
 ### Question 7 — Scenario: Multi-Agent Research System
 
