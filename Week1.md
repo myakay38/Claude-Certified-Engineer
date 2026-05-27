@@ -20,7 +20,13 @@ Every call to Claude includes `model`, `max_tokens`, `system`, `messages`, `tool
 
 > **Quick check:** Look at the request below. What will happen, and why?
 > ```json
-> { "model": "claude-sonnet-4-6", "max_tokens": 1024, "messages": [{"role": "user", "content": "What's the order status for customer 42?"}] }
+> { 
+> 	"model": "claude-sonnet-4-6", 
+> 	"max_tokens": 1024, 
+> 	"messages": [
+> 		{"role": "user", "content": "What's the order status for customer 42?"}
+> 	] 
+> }
 > ```
 > *(The model has no system prompt defining its role, no tools to look up order data, and no conversation history. It will respond in plain text with a guess or a request for more information — it cannot actually retrieve anything.)*
 
@@ -29,18 +35,49 @@ Every call to Claude includes `model`, `max_tokens`, `system`, `messages`, `tool
 **Message roles: `user`, `assistant`, and tool results**
 The `messages` array tells Claude the full history of the conversation. Claude uses all of it to decide what to say next. Tool results appear as `tool_result` content blocks within a `user`-role message.
 
+A `tool_result` block has the following structure:
+
+```json
+{
+  "role": "user",
+  "content": [
+    {
+      "type": "tool_result",
+      "tool_use_id": "<id from the assistant's tool_use block>",
+      "content": "<string result, or an array of content blocks>"
+    }
+  ]
+}
+```
+
+The `tool_use_id` ties the result back to the specific tool call Claude made — this matters when Claude calls multiple tools in one turn. There is no `"role": "tool"` in the API; tool results always ride inside a `user`-role message because the API maintains a strict alternating `user`/`assistant` turn structure, and tool results are external input being fed *into* Claude. (More on tools on Day 2)
+
 > **Quick check:** You call Claude, it responds with a tool call, and you execute the tool. What does the next message you send to Claude look like? Sketch the `messages` array at that point, including both the assistant's tool call and your tool result.
 
 ---
 
 **The `stop_reason` field**
-Every Claude response includes a `stop_reason`. This is the signal your code must inspect to control agent behavior. The four values are `end_turn`, `tool_use`, `max_tokens`, and `stop_sequence`.
+Every Claude response includes a `stop_reason`. This is the signal your code must inspect to control agent behavior. There are five values: `end_turn`, `tool_use`, `max_tokens`, `stop_sequence`, and `pause_turn`.
+
+The first four are the core values you'll encounter with client-executed tools. `pause_turn` is specific to server-executed tools (see below) and signals that the server-side loop hit its iteration limit mid-turn — your application should resend the full conversation to let the model continue where it left off.
+
+The canonical agent loop for client-executed tools looks like this:
+
+```python
+while response.stop_reason == "tool_use":
+    tool_results = execute_tools(response)   # your code runs the tools
+    response = client.messages.create(
+        messages=[*messages, response, tool_results]
+    )
+# stop_reason is now "end_turn", "max_tokens", or "stop_sequence"
+```
 
 > **Quick check:** Match each scenario to the correct `stop_reason` and describe what your code should do next.
 > 1. Claude finishes answering the user's question in prose.
 > 2. Claude decides to look up a customer record.
 > 3. Claude is mid-sentence when the response cuts off.
 > 4. You passed `"stop_sequences": ["###"]` and Claude wrote `###`.
+> 5. You're using `web_search` and the server-side loop hit its iteration cap before finishing.
 
 ---
 
@@ -71,6 +108,15 @@ Tools are how Claude takes action in the world. The mechanics of tool definition
 ---
 
 ### Key Concepts
+
+**The three categories of tools**
+Not all tools work the same way. Understanding which category a tool falls into determines what your application is responsible for. ([Reference](https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works))
+
+- **User-defined (client-executed):** You write the schema, you execute the code, you return the result via a `tool_result` block. This is the default model and the vast majority of tool-use traffic.
+- **Anthropic-schema (client-executed):** `bash`, `text_editor`, `computer`, `memory`. Anthropic publishes the schema — which is trained-in, making these tools more reliably called — but your application still handles execution and returns results the same way as user-defined tools.
+- **Server-executed:** `web_search`, `web_fetch`, `code_execution`, `tool_search`. Anthropic runs everything. You enable the tool in your request; by the time a response reaches you, execution is already complete. The response contains `server_tool_use` blocks (not `tool_use`), and you never construct a `tool_result` for these. The tradeoff: less control over what data enters Claude's context window. ([Web search reference](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool))
+
+---
 
 **What `tool_use` is — and isn't**
 Claude does not execute code. When it wants to use a tool, it generates a structured call request. Your code receives that request, executes it, and returns the result. Claude never touches your database directly.
