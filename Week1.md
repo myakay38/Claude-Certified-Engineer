@@ -20,12 +20,12 @@ Every call to Claude includes `model`, `max_tokens`, `system`, `messages`, `tool
 
 > **Quick check:** Look at the request below. What will happen, and why?
 > ```json
-> { 
-> 	"model": "claude-sonnet-4-6", 
-> 	"max_tokens": 1024, 
+> {
+> 	"model": "claude-sonnet-4-6",
+> 	"max_tokens": 1024,
 > 	"messages": [
 > 		{"role": "user", "content": "What's the order status for customer 42?"}
-> 	] 
+> 	]
 > }
 > ```
 > *(The model has no system prompt defining its role, no tools to look up order data, and no conversation history. It will respond in plain text with a guess or a request for more information — it cannot actually retrieve anything.)*
@@ -128,6 +128,10 @@ Claude does not execute code. When it wants to use a tool, it generates a struct
 
 **Anatomy of a tool definition**
 Each tool has a `name`, a `description`, and an `input_schema`. The schema enforces the structure of Claude's call; the description determines *whether* Claude calls it at all.
+
+Within `properties`, all standard JSON Schema types are available: `"string"`, `"integer"`, `"number"`, `"boolean"`, `"array"` (with an `"items"` field to define element type), `"object"` (for nested structures), `"null"`, and union arrays like `["string", "null"]` for fields that may be absent. The `["string", "null"]` pattern is particularly useful for optional fields where you want Claude to explicitly return `null` rather than omitting the field entirely.
+
+The top-level `input_schema` uses `"type": "object"` in all documented examples and the API design implies it — Claude always returns tool inputs as a named JSON object — but the docs do not explicitly state it as a hard constraint.
 
 > **Exercise:** Write a tool definition for a `send_notification` tool that sends a push notification to a user. It takes a `user_id` (integer), a `message` (string, max 160 characters), and an optional `priority` (one of `"low"`, `"normal"`, `"urgent"`). Write the description as if Claude will use it alongside a `send_email` tool — make sure the description clearly tells Claude when to prefer one over the other.
 
