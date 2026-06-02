@@ -191,9 +191,58 @@ Different problems need different example types: ambiguous scenarios, output for
 ---
 
 **Prompt chaining: sequential steps for complex tasks**
-Breaking a complex task into a chain of focused prompts — each with one job — prevents attention dilution and produces more consistent quality than a single prompt trying to do everything.
+Prompt chaining is the practice of breaking a complex task into a series of focused prompts and sending them one at a time, where the output of each step feeds into the next as input. Application code drives the sequence. This is more reliable than putting numbered steps in a single prompt — when Claude is asked to do multiple things in one call, it can shortchange later steps after spending attention on earlier ones (attention dilution).
 
-> **Quick check:** You need to review a pull request for (a) local bugs in each file, (b) cross-file type consistency, and (c) whether the change matches the ticket description. Why is a single prompt over all files worse than a chain of three focused prompts? What specifically goes wrong with the single-prompt approach?
+```python
+# Simplified example — no model, max_tokens, system prompt, or error handling shown.
+# In production, each step's output should be validated before feeding it forward.
+
+# Step 1: per-file analysis
+response1 = client.messages.create(
+    messages=[{"role": "user", "content": f"Analyze each of these files for local bugs:\n\n{files}"}]
+)
+local_bugs = response1.content[0].text
+
+# Step 2: cross-file consistency
+response2 = client.messages.create(
+    messages=[{"role": "user", "content": f"Given these local bugs:\n\n{local_bugs}\n\nNow check for cross-file type consistency issues."}]
+)
+cross_file_issues = response2.content[0].text
+
+# Step 3: ticket alignment
+response3 = client.messages.create(
+    messages=[{"role": "user", "content": f"Given these findings:\n\n{local_bugs}\n{cross_file_issues}\n\nDoes this change match the ticket description?\n\n{ticket}"}]
+)
+```
+
+> **Quick check:** A pull request needs to be reviewed for (a) local bugs in each file, (b) cross-file type consistency, and (c) whether the change matches the ticket description. Why is a single prompt over all files worse than a chain of three focused prompts? What specifically goes wrong with the single-prompt approach?
+
+---
+
+**Dynamic decomposition**
+Dynamic decomposition is when Claude is asked to break an open-ended task into a series of focused subtasks itself, based on what it discovers during a planning phase. The planning phase produces a task list; that list is then executed using prompt chaining. The two approaches are complementary — dynamic decomposition handles the *planning*, prompt chaining handles the *execution*.
+
+Prompt chaining is used directly when the steps are known in advance. Dynamic decomposition is used first when the right steps can only be determined by exploring the problem.
+
+```python
+# Simplified example — no model, max_tokens, system prompt, or error handling shown.
+# In production, the generated plan should be reviewed before entering the execution loop
+# to ensure the subtasks are appropriate and within expected scope.
+
+# Phase 1: planning — Claude maps the problem and generates subtasks
+plan_response = client.messages.create(
+    messages=[{"role": "user", "content": f"Investigate why this API is returning incorrect results. Here is the codebase:\n\n{codebase}\n\nProduce a numbered list of subtasks to investigate, based on what you find."}]
+)
+plan = plan_response.content[0].text
+
+# Phase 2: execute each subtask using prompt chaining, feeding results forward
+results = []
+for subtask in parse_subtasks(plan):  # parse_subtasks() extracts the numbered list into an iterable
+    response = client.messages.create(
+        messages=[{"role": "user", "content": f"Previous findings:\n\n{results}\n\nNow complete this subtask: {subtask}"}]
+    )
+    results.append(response.content[0].text)
+```
 
 ---
 
