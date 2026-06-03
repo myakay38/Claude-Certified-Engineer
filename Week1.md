@@ -278,6 +278,19 @@ Using `tool_use` with a JSON schema is the most reliable way to get structured o
 **Schema design rules**
 Good schemas are explicit about what's required, use nullable types for absent data, and include escape hatches like `"other"` and `"unclear"` enum values so Claude doesn't hallucinate a category that doesn't fit.
 
+When an enum field includes an escape hatch value, the standard practice is to add a separate sibling property (e.g. `category_detail`) in the `properties` object, typed as `["string", "null"]`. It should be nullable so Claude leaves it empty for the standard enum values, and its description should explicitly state when it must be populated. The conditional validation — requiring `category_detail` when `category` is `"other"` — lives in application code rather than the schema itself.
+
+```json
+"category": {
+  "type": "string",
+  "enum": ["hardware", "software", "services", "other"]
+},
+"category_detail": {
+  "type": ["string", "null"],
+  "description": "Required when category is 'other'. Provide a short description of the actual category."
+}
+```
+
 > **Exercise:** You're extracting invoice data. Design a JSON schema for a single line item that includes: `description` (always present), `unit_price` (always present), `quantity` (always present), `discount_percent` (sometimes absent), and `category` (one of `"hardware"`, `"software"`, `"services"`, `"other"` with a detail field if `"other"`). Apply the schema design rules correctly.
 
 ---
