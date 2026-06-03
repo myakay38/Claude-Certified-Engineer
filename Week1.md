@@ -395,4 +395,30 @@ Explicit escalation criteria with few-shot examples directly address the root ca
 
 ---
 
-## Week 1 Capstone Exerc
+## Week 1 Capstone Exercise
+
+**Scenario: Invoice Extraction System**
+
+You are building a system to extract structured data from supplier invoices. Invoices arrive as plain text and vary significantly in format — some are formal with line-item tables, some are informal emails, some reference vague quantities like "a few units" or "half a dozen."
+
+Your task is to design the complete extraction pipeline for a single invoice. Work through each step:
+
+**Part A — Schema Design**
+Design a JSON schema for an invoice that captures: invoice number, vendor name, invoice date, due date, a list of line items (each with description, quantity, unit price, and line total), stated grand total, and currency. Apply all schema design rules: required vs. optional, nullable fields, enum escape hatches where appropriate. Add a `conflict_detected` flag that signals when the sum of line item totals doesn't match the stated grand total.
+
+**Part B — Tool Definition**
+Write the tool definition that will wrap your schema. Write the description as if this tool will exist alongside a `validate_vendor` tool and a `flag_for_review` tool — make sure it's clear when each should be used.
+
+**Part C — Few-shot Examples**
+Write two extraction examples that demonstrate how to handle:
+1. An informal quantity like "half a dozen filters"
+2. A line item where the unit price is missing but the line total is present
+
+**Part D — Retry Prompt**
+Your first extraction attempt returns `grand_total: 1500.00` but the sum of line items is `1425.00`. `conflict_detected` is `true`. Write the retry prompt you would send to Claude, including everything it needs to correct the extraction.
+
+**Part E — Failure Analysis**
+After running your system on 200 invoices, you find it fails consistently on one type. Describe the diagnostic approach you'd use to identify which document type is failing, what information you'd need, and what technique from this week you'd apply to fix it.
+
+---
+*Continue to [Week 2 →](Week2.md)*
