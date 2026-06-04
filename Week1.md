@@ -7,6 +7,7 @@
 ---
 
 ## Day 1 — How Claude Actually Works (API Fundamentals)
+
 **Guide reference:** Chapter 1
 
 The starting point: Claude is a stateless function. Every call is independent, and you must send the full conversation history every time. This session reframes Claude from "chatbot" to "API endpoint with reasoning capabilities."
@@ -19,32 +20,35 @@ The starting point: Claude is a stateless function. Every call is independent, a
 Every call to Claude includes `model`, `max_tokens`, `system`, `messages`, `tools`, and `tool_choice`. Understanding what each field does — and what happens when you omit one — is foundational.
 
 > **Quick check:** Look at the request below. What will happen, and why?
+>
 > ```json
 > {
-> 	"model": "claude-sonnet-4-6",
-> 	"max_tokens": 1024,
-> 	"messages": [
-> 		{"role": "user", "content": "What's the order status for customer 42?"}
-> 	]
+>   "model": "claude-sonnet-4-6",
+>   "max_tokens": 1024,
+>   "messages": [
+>     { "role": "user", "content": "What's the order status for customer 42?" }
+>   ]
 > }
 > ```
-> *(The model has no system prompt defining its role, no tools to look up order data, and no conversation history. It will respond in plain text with a guess or a request for more information — it cannot actually retrieve anything.)*
+>
+> _(The model has no system prompt defining its role, no tools to look up order data, and no conversation history. It will respond in plain text with a guess or a request for more information — it cannot actually retrieve anything.)_
 
 ---
 
 **Message roles: `user` and `assistant`**
 The `messages` array tells Claude the full history of the conversation. Claude uses all of it to decide what to say next. The two roles are `user` (input to Claude) and `assistant` (output from Claude). The API enforces a strict alternating structure between them.
 
-> **Note:** Tool use introduces a third kind of message content — `tool_result` blocks. These are covered in Day 2.
+> **Note:** Tool use introduces a third kind of message content — `tool_result` blocks. These are covered in Day 3.
 
 > **Quick check:** What does the `messages` array look like after two turns of a conversation where the user asks a question and Claude answers in prose? Sketch the array.
 
 ---
 
 **The `stop_reason` field**
-Every Claude response includes a `stop_reason`. This is the signal your code must inspect to control agent behavior. The four core values are `end_turn`, `tool_use`, `max_tokens`, and `stop_sequence`. We'll learn more about how `tool_use` fits into the agent loop on Day 2.
+Every Claude response includes a `stop_reason`. This is the signal your code must inspect to control agent behavior. The four core values are `end_turn`, `tool_use`, `max_tokens`, and `stop_sequence`. We'll learn more about how `tool_use` fits into the agent loop on Day 3.
 
 > **Quick check:** Match each scenario to the correct `stop_reason` and describe what your code should do next.
+>
 > 1. Claude finishes answering the user's question in prose.
 > 2. Claude decides to look up a customer record.
 > 3. Claude is mid-sentence when the response cuts off.
@@ -55,7 +59,7 @@ Every Claude response includes a `stop_reason`. This is the signal your code mus
 **The system prompt**
 The system prompt defines Claude's role, constraints, and behavioral rules. It is passed separately from `messages` and takes priority over user input. Crucially, the exact wording of a system prompt can cause unintended side effects.
 
-> **Quick check:** A system prompt says: *"Always verify the customer's identity before taking any action."* Data shows the agent now calls `get_customer` even when the user just asks a general FAQ question. What caused this, and what is a more precise instruction that avoids the problem?
+> **Quick check:** A system prompt says: _"Always verify the customer's identity before taking any action."_ Data shows the agent now calls `get_customer` even when the user just asks a general FAQ question. What caused this, and what is a more precise instruction that avoids the problem?
 
 ---
 
@@ -67,11 +71,115 @@ The context window holds everything: system prompt, full message history, tool d
 ---
 
 ### Extension Question
+
 If Claude has no memory between calls, what are the implications for building a multi-turn customer support agent? What does your application code need to do that a human agent's brain does automatically?
 
 ---
 
-## Day 2 — Giving Claude Abilities: Tools and `tool_use`
+## Day 2 — Prompt Engineering: Making Claude Do It Well
+
+**Guide reference:** Chapter 6 (sections 6.1–6.4)
+
+You can't build reliable systems without knowing how to instruct Claude precisely. This session covers the core techniques that separate professional implementations from fragile demos.
+
+---
+
+### Key Concepts
+
+**Few-shot prompting: examples over explanations**
+Including 2–4 concrete input/output examples in your prompt is almost always more effective than a lengthy description. Claude generalizes the _pattern_ demonstrated by the examples to new inputs.
+
+> **Exercise:** You're building a support ticket classifier. Without few-shot examples, Claude classifies "my account won't let me log in" as `billing` 30% of the time. Write two few-shot examples (one clear case and one ambiguous case with a rationale) that would help Claude correctly classify authentication issues.
+
+---
+
+**The five types of few-shot examples**
+Different problems need different example types: ambiguous scenarios, output formatting, acceptable vs. problematic patterns, extraction from varied document formats, and informal/non-standard data.
+
+> **Quick check:** A recipe extraction system needs to handle both "2 cups of flour" and "a generous handful of cheese." Which type of few-shot example is most useful here, and what would a good example look like?
+
+---
+
+**Explicit criteria vs. vague instructions**
+"Be conservative" is an instruction; "flag a comment only if it contradicts the actual code behavior" is a criterion. The difference in reliability is enormous. Severity definitions with code examples are more effective than adjective-based rubrics.
+
+> **Exercise:** Rewrite this vague instruction as an explicit set of criteria with at least two concrete examples:
+> _"Review the code carefully and flag any security concerns. Be thorough but avoid false positives."_
+
+---
+
+**Prompt chaining: sequential steps for complex tasks**
+Prompt chaining is the practice of breaking a complex task into a series of focused prompts and sending them one at a time, where the output of each step feeds into the next as input. Application code drives the sequence. This is more reliable than putting numbered steps in a single prompt — when Claude is asked to do multiple things in one call, it can shortchange later steps after spending attention on earlier ones (attention dilution).
+
+```python
+# Simplified example — no model, max_tokens, system prompt, or error handling shown.
+# In production, each step's output should be validated before feeding it forward.
+
+# Step 1: per-file analysis
+response1 = client.messages.create(
+    messages=[{"role": "user", "content": f"Analyze each of these files for local bugs:\n\n{files}"}]
+)
+local_bugs = response1.content[0].text
+
+# Step 2: cross-file consistency
+response2 = client.messages.create(
+    messages=[{"role": "user", "content": f"Given these local bugs:\n\n{local_bugs}\n\nNow check for cross-file type consistency issues."}]
+)
+cross_file_issues = response2.content[0].text
+
+# Step 3: ticket alignment
+response3 = client.messages.create(
+    messages=[{"role": "user", "content": f"Given these findings:\n\n{local_bugs}\n{cross_file_issues}\n\nDoes this change match the ticket description?\n\n{ticket}"}]
+)
+```
+
+> **Quick check:** A pull request needs to be reviewed for (a) local bugs in each file, (b) cross-file type consistency, and (c) whether the change matches the ticket description. Why is a single prompt over all files worse than a chain of three focused prompts? What specifically goes wrong with the single-prompt approach?
+> A single prompt over all files is prone to attention dilution: Claude may only focus on a few files and skip or gloss over others.
+
+---
+
+**Dynamic decomposition**
+Dynamic decomposition is when Claude is asked to break an open-ended task into a series of focused subtasks itself, based on what it discovers during a planning phase. The planning phase produces a task list; that list is then executed using prompt chaining. The two approaches are complementary — dynamic decomposition handles the _planning_, prompt chaining handles the _execution_.
+
+Prompt chaining is used directly when the steps are known in advance. Dynamic decomposition is used first when the right steps can only be determined by exploring the problem.
+
+```python
+# Simplified example — no model, max_tokens, system prompt, or error handling shown.
+# In production, the generated plan should be reviewed before entering the execution loop
+# to ensure the subtasks are appropriate and within expected scope.
+
+# Phase 1: planning — Claude maps the problem and generates subtasks
+plan_response = client.messages.create(
+    messages=[{"role": "user", "content": f"Investigate why this API is returning incorrect results. Here is the codebase:\n\n{codebase}\n\nProduce a numbered list of subtasks to investigate, based on what you find."}]
+)
+plan = plan_response.content[0].text
+
+# Phase 2: execute each subtask using prompt chaining, feeding results forward
+results = []
+for subtask in parse_subtasks(plan):  # parse_subtasks() extracts the numbered list into an iterable
+    response = client.messages.create(
+        messages=[{"role": "user", "content": f"Previous findings:\n\n{results}\n\nNow complete this subtask: {subtask}"}]
+    )
+    results.append(response.content[0].text)
+```
+
+---
+
+**The interview pattern**
+Before acting on an underspecified request, Claude asks targeted clarifying questions. This is especially valuable for tasks with non-obvious implications or multiple viable approaches.
+
+> **Quick check:** You ask Claude to "clean up the database." What three clarifying questions should it ask before doing anything, and what could go wrong if it acts without asking?
+
+---
+
+### Extension Question
+
+A colleague argues: "Few-shot examples just waste tokens — Claude already knows how to format JSON." When would you agree with them, and when would you push back? What's the specific failure mode that few-shot examples address that Claude's training alone doesn't?
+
+---
+
+## Day 3 — Giving Claude Abilities: Tools and `tool_use`
+
 **Guide reference:** Chapter 2 (sections 2.1–2.3)
 
 Tools are how Claude takes action in the world. The mechanics of tool definitions are straightforward — the critical insight is that **tool descriptions are the primary selection mechanism**, not routing logic in your code.
@@ -92,7 +200,7 @@ Not all tools work the same way. Understanding which category a tool falls into 
 **What `tool_use` is — and isn't**
 Claude does not execute code. When it wants to use a tool, it generates a structured call request. Your code receives that request, executes it, and returns the result. Claude never touches your database directly.
 
-When Claude makes a tool call, the response has `stop_reason: "tool_use"`. Your code executes the tool and returns the result as a `tool_result` content block inside a `user`-role message — there is no `"role": "tool"` in the API. Tool results ride inside a `user` message because the API maintains a strict alternating `user`/`assistant` turn structure, and tool results are external input being fed *into* Claude.
+When Claude makes a tool call, the response has `stop_reason: "tool_use"`. Your code executes the tool and returns the result as a `tool_result` content block inside a `user`-role message — there is no `"role": "tool"` in the API. Tool results ride inside a `user` message because the API maintains a strict alternating `user`/`assistant` turn structure, and tool results are external input being fed _into_ Claude.
 
 A `tool_result` block has the following structure:
 
@@ -128,12 +236,12 @@ For server-executed tools (`web_search`, `web_fetch`, etc.), a fifth `stop_reaso
 > **Quick check:** You call Claude, it responds with a tool call, and you execute the tool. What does the next message you send to Claude look like? Sketch the `messages` array at that point, including both the assistant's tool call and your tool result.
 
 > **Quick check:** True or false, and explain: "If I define a `delete_record` tool but Claude's system prompt says it should never delete anything, the record is safe."
-> *(False. Claude might avoid calling it most of the time, but prompt instructions are probabilistic. For destructive operations, use a hook or precondition at the code level — not just the prompt.)*
+> _(False. Claude might avoid calling it most of the time, but prompt instructions are probabilistic. For destructive operations, use a hook or precondition at the code level — not just the prompt.)_
 
 ---
 
 **Anatomy of a tool definition**
-Each tool has a `name`, a `description`, and an `input_schema`. The schema enforces the structure of Claude's call; the description determines *whether* Claude calls it at all.
+Each tool has a `name`, a `description`, and an `input_schema`. The schema enforces the structure of Claude's call; the description determines _whether_ Claude calls it at all.
 
 Within `properties`, all standard JSON Schema types are available: `"string"`, `"integer"`, `"number"`, `"boolean"`, `"array"` (with an `"items"` field to define element type), `"object"` (for nested structures), `"null"`, and union arrays like `["string", "null"]` for fields that may be absent. The `["string", "null"]` pattern is particularly useful for optional fields where you want Claude to explicitly return `null` rather than omitting the field entirely.
 
@@ -144,7 +252,7 @@ The top-level `input_schema` uses `"type": "object"` in all documented examples 
 ---
 
 **Why descriptions are the primary selection mechanism**
-An LLM picks tools based on their descriptions. When descriptions are vague or overlap, the model picks inconsistently. There is no routing layer between Claude and your tools — the description *is* the router.
+An LLM picks tools based on their descriptions. When descriptions are vague or overlap, the model picks inconsistently. There is no routing layer between Claude and your tools — the description _is_ the router.
 
 > **Quick check:** You have two tools: `analyze_content` and `analyze_document`. Both descriptions say "analyzes provided content and returns a summary." Users report Claude picks them seemingly at random. Without changing any code, what single change would most improve reliability?
 
@@ -154,6 +262,7 @@ An LLM picks tools based on their descriptions. When descriptions are vague or o
 `tool_choice` gives you control over whether and how Claude picks tools. `auto` lets Claude decide; `any` forces a tool call of Claude's choosing; `{"type": "tool", "name": "X"}` forces a specific tool.
 
 > **Quick check:** For each scenario, choose the correct `tool_choice` value and explain why:
+>
 > 1. You want Claude to extract structured data from a document, and you don't care which of three extraction tools it uses — but you need a tool call, not prose.
 > 2. You're building a customer lookup flow where `get_customer` must always run first, before any other tool.
 > 3. You want Claude to answer simple questions in plain text when no tool is needed, but use tools when appropriate.
@@ -161,111 +270,13 @@ An LLM picks tools based on their descriptions. When descriptions are vague or o
 ---
 
 ### Extension Question
+
 You have a customer support agent with four tools: `get_customer`, `lookup_order`, `process_refund`, and `escalate_to_human`. How would you write the description for `get_customer` to make it clear when it should and shouldn't be used, and how would you distinguish it from `lookup_order`?
 
 ---
 
-## Day 3 — Prompt Engineering: Making Claude Do It Well
-**Guide reference:** Chapter 6 (sections 6.1–6.4)
-
-You can't build reliable systems without knowing how to instruct Claude precisely. This session covers the core techniques that separate professional implementations from fragile demos.
-
----
-
-### Key Concepts
-
-**Few-shot prompting: examples over explanations**
-Including 2–4 concrete input/output examples in your prompt is almost always more effective than a lengthy description. Claude generalizes the *pattern* demonstrated by the examples to new inputs.
-
-> **Exercise:** You're building a support ticket classifier. Without few-shot examples, Claude classifies "my account won't let me log in" as `billing` 30% of the time. Write two few-shot examples (one clear case and one ambiguous case with a rationale) that would help Claude correctly classify authentication issues.
-
----
-
-**The five types of few-shot examples**
-Different problems need different example types: ambiguous scenarios, output formatting, acceptable vs. problematic patterns, extraction from varied document formats, and informal/non-standard data.
-
-> **Quick check:** A recipe extraction system needs to handle both "2 cups of flour" and "a generous handful of cheese." Which type of few-shot example is most useful here, and what would a good example look like?
-
----
-
-**Explicit criteria vs. vague instructions**
-"Be conservative" is an instruction; "flag a comment only if it contradicts the actual code behavior" is a criterion. The difference in reliability is enormous. Severity definitions with code examples are more effective than adjective-based rubrics.
-
-> **Exercise:** Rewrite this vague instruction as an explicit set of criteria with at least two concrete examples:
-> *"Review the code carefully and flag any security concerns. Be thorough but avoid false positives."*
-
----
-
-**Prompt chaining: sequential steps for complex tasks**
-Prompt chaining is the practice of breaking a complex task into a series of focused prompts and sending them one at a time, where the output of each step feeds into the next as input. Application code drives the sequence. This is more reliable than putting numbered steps in a single prompt — when Claude is asked to do multiple things in one call, it can shortchange later steps after spending attention on earlier ones (attention dilution).
-
-```python
-# Simplified example — no model, max_tokens, system prompt, or error handling shown.
-# In production, each step's output should be validated before feeding it forward.
-
-# Step 1: per-file analysis
-response1 = client.messages.create(
-    messages=[{"role": "user", "content": f"Analyze each of these files for local bugs:\n\n{files}"}]
-)
-local_bugs = response1.content[0].text
-
-# Step 2: cross-file consistency
-response2 = client.messages.create(
-    messages=[{"role": "user", "content": f"Given these local bugs:\n\n{local_bugs}\n\nNow check for cross-file type consistency issues."}]
-)
-cross_file_issues = response2.content[0].text
-
-# Step 3: ticket alignment
-response3 = client.messages.create(
-    messages=[{"role": "user", "content": f"Given these findings:\n\n{local_bugs}\n{cross_file_issues}\n\nDoes this change match the ticket description?\n\n{ticket}"}]
-)
-```
-
-> **Quick check:** A pull request needs to be reviewed for (a) local bugs in each file, (b) cross-file type consistency, and (c) whether the change matches the ticket description. Why is a single prompt over all files worse than a chain of three focused prompts? What specifically goes wrong with the single-prompt approach?
-> 	A single prompt over all files is prone to attention dilution: Claude may only focus on a few files and skip or gloss over others.
-
----
-
-**Dynamic decomposition**
-Dynamic decomposition is when Claude is asked to break an open-ended task into a series of focused subtasks itself, based on what it discovers during a planning phase. The planning phase produces a task list; that list is then executed using prompt chaining. The two approaches are complementary — dynamic decomposition handles the *planning*, prompt chaining handles the *execution*.
-
-Prompt chaining is used directly when the steps are known in advance. Dynamic decomposition is used first when the right steps can only be determined by exploring the problem.
-
-```python
-# Simplified example — no model, max_tokens, system prompt, or error handling shown.
-# In production, the generated plan should be reviewed before entering the execution loop
-# to ensure the subtasks are appropriate and within expected scope.
-
-# Phase 1: planning — Claude maps the problem and generates subtasks
-plan_response = client.messages.create(
-    messages=[{"role": "user", "content": f"Investigate why this API is returning incorrect results. Here is the codebase:\n\n{codebase}\n\nProduce a numbered list of subtasks to investigate, based on what you find."}]
-)
-plan = plan_response.content[0].text
-
-# Phase 2: execute each subtask using prompt chaining, feeding results forward
-results = []
-for subtask in parse_subtasks(plan):  # parse_subtasks() extracts the numbered list into an iterable
-    response = client.messages.create(
-        messages=[{"role": "user", "content": f"Previous findings:\n\n{results}\n\nNow complete this subtask: {subtask}"}]
-    )
-    results.append(response.content[0].text)
-```
-
----
-
-**The interview pattern**
-Before acting on an underspecified request, Claude asks targeted clarifying questions. This is especially valuable for tasks with non-obvious implications or multiple viable approaches.
-
-> **Quick check:** You ask Claude to "clean up the database." What three clarifying questions should it ask before doing anything, and what could go wrong if it acts without asking?
-
----
-
-### Extension Question
-A colleague argues: "Few-shot examples just waste tokens — Claude already knows how to format JSON." When would you agree with them, and when would you push back? What's the specific failure mode that few-shot examples address that Claude's training alone doesn't?
-
----
-
 ## Day 4 — Structured Output: Getting Reliable Data Back
+
 **Guide reference:** Chapter 2 (sections 2.4–2.5), Chapter 6 (sections 6.5–6.6)
 
 This session ties tools and prompt engineering into a complete data extraction pattern. The goal: structured, validated JSON that your downstream code can actually rely on.
@@ -316,7 +327,7 @@ When validation fails, re-prompt Claude with the original document, the incorrec
 ---
 
 **Self-correction schemas**
-A schema can be designed to extract both a stated value and a computed value, allowing your code to detect inconsistencies automatically without needing a separate validation pass. The key insight is that Claude does not do the arithmetic — the schema asks it to extract what the document *states* as the total and the individual line item prices separately. Your code then sums the line items and compares.
+A schema can be designed to extract both a stated value and a computed value, allowing your code to detect inconsistencies automatically without needing a separate validation pass. The key insight is that Claude does not do the arithmetic — the schema asks it to extract what the document _states_ as the total and the individual line item prices separately. Your code then sums the line items and compares.
 
 A `conflict_detected` boolean field is included as Claude's own soft assessment of whether the values appear consistent. Your application code should always independently verify with its own arithmetic check. The reason to have both is that they tell you different things: if both Claude and your code agree there is a discrepancy, a retry is worth attempting — Claude saw something inconsistent in the source document. If your code catches a discrepancy that Claude missed (`conflict_detected: false`), Claude likely misread a value, which a retry is less likely to fix and warrants human review instead.
 
@@ -333,7 +344,7 @@ A `conflict_detected` boolean field is included as Claude's own soft assessment 
       "items": {
         "type": "object",
         "properties": {
-          "name":  { "type": "string" },
+          "name": { "type": "string" },
           "price": { "type": "number" }
         },
         "required": ["name", "price"]
@@ -375,16 +386,19 @@ if discrepancy > 0.01:  # tolerance for floating point
 ---
 
 ### Extension Question
+
 A data extraction system achieves 97% accuracy overall — but when you break it down by document type, accuracy on handwritten invoices is only 58%. The schema is correctly designed. What does this tell you about where to focus your improvement efforts, and what techniques from this week would you apply?
 
 ---
 
 ## Day 5 — Week 1 Review
+
 **Guide reference:** Exam Questions 1–3, Domain 4 notes (sections 4.1–4.4)
 
-This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together. Focus on the *reasoning* behind each answer, not just the correct choice.
+This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together. Focus on the _reasoning_ behind each answer, not just the correct choice.
 
 **Agenda:**
+
 1. Work through Exam Questions 1–3 as a group. For each, have someone argue for the wrong answers before revealing the correct one.
 2. Review Domain 4 notes (Prompt Engineering and Structured Output) in Part II of the guide.
 
@@ -469,6 +483,7 @@ Write the tool definition that will wrap your schema. Write the description as i
 
 **Part C — Few-shot Examples**
 Write two extraction examples that demonstrate how to handle:
+
 1. An informal quantity like "half a dozen filters"
 2. A line item where the unit price is missing but the line total is present
 
@@ -479,4 +494,5 @@ Your first extraction attempt returns `grand_total: 1500.00` but the sum of line
 After running your system on 200 invoices, you find it fails consistently on one type. Describe the diagnostic approach you'd use to identify which document type is failing, what information you'd need, and what technique from this week you'd apply to fix it.
 
 ---
-*Continue to [Week 2 →](Week2.md)*
+
+_Continue to [Week 2 →](Week2.md)_
