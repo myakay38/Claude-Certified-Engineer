@@ -4,9 +4,16 @@
 
 **Exam domains covered:** Domain 1 (Agent Architecture and Orchestration, 27%), Domain 2 (Tool Design and MCP Integration, 18%)
 
+### Quick Navigation Links
+**Obsidian:** [Day 6](#Day%206%20—%20The%20Agentic%20Loop), [Day 7](#Day%207%20—%20Multi-Agent%20Systems%20Coordinator%20and%20Subagents), [Day 8](#Day%208%20—%20Hooks%20Deterministic%20Control%20Over%20Agent%20Behavior), [Day 9](#Day%209%20—%20Connecting%20Claude%20to%20the%20World%20MCP), [Day 10](#Day%2010%20—%20Week%202%20Review)
+
+**Markdown:** [Day 6](#day6), [Day 7](#day7), [Day 8](#day8), [Day 9](#day9), [Day 10](#day10)
+
 ---
 
+<a id="day6"></a>
 ## Day 6 — The Agentic Loop
+
 **Guide reference:** Chapter 3 (sections 3.1–3.2)
 
 The agentic loop is the core pattern that makes Claude autonomous. This session builds the correct mental model for how agents run — before adding the complexity of multiple agents, hooks, and external systems.
@@ -25,7 +32,7 @@ The agentic loop has four steps: send a request to Claude with tools, receive a 
 **`stop_reason == "end_turn"` is the only reliable completion signal**
 Two common anti-patterns: (1) parsing the assistant's text for a phrase like "Task complete" to detect when to stop, and (2) using `max_iterations = 5` as the primary stopping condition. Both fail silently in ways that are hard to debug.
 
-> **Quick check:** Your agent uses `max_iterations = 5` as its stopping condition. A task requires 6 tool calls. What happens? What should your stopping logic look like instead, and when would you still use an iteration limit as a *secondary* safeguard?
+> **Quick check:** Your agent uses `max_iterations = 5` as its stopping condition. A task requires 6 tool calls. What happens? What should your stopping logic look like instead, and when would you still use an iteration limit as a _secondary_ safeguard?
 
 ---
 
@@ -46,16 +53,19 @@ In an agentic system, Claude decides which tool to call next based on context an
 **Anti-patterns to memorize**
 Three patterns that seem reasonable but reliably fail: parsing assistant text for completion signals, using arbitrary iteration limits as the primary stop condition, and checking whether the assistant produced textual content as a signal that the task is done.
 
-> **Quick check:** An engineer defends an iteration limit: "We set `max_iterations=10` because our tasks should never need more than 10 steps — it's a safety net." Evaluate this. Is the limit itself wrong, or is it the way it's being used as the *primary* stop condition?
+> **Quick check:** An engineer defends an iteration limit: "We set `max_iterations=10` because our tasks should never need more than 10 steps — it's a safety net." Evaluate this. Is the limit itself wrong, or is it the way it's being used as the _primary_ stop condition?
 
 ---
 
 ### Extension Question
+
 Your agent is stuck in a loop: it keeps calling `lookup_order`, getting a result, and then calling `lookup_order` again with the same arguments. What are three possible root causes, and how would you diagnose each?
 
 ---
 
+<a id="day7"></a>
 ## Day 7 — Multi-Agent Systems: Coordinator and Subagents
+
 **Guide reference:** Chapter 3 (sections 3.3–3.4)
 
 One agent is powerful. A team of agents — each specialized, each with isolated context — is how you tackle complex real-world tasks. This session covers the hub-and-spoke architecture and the most commonly misunderstood property of subagents: they have no automatic access to the coordinator's context.
@@ -75,6 +85,7 @@ The coordinator is the hub: it owns all routing, error handling, result aggregat
 This is the most commonly misunderstood property. Subagents do not automatically inherit the coordinator's conversation history. If the coordinator has spent five turns gathering customer information, that information does not exist in a subagent's context unless explicitly included in the prompt.
 
 > **Exercise:** The coordinator has gathered the following by the time it calls a subagent:
+>
 > - Customer ID: CUST-4492
 > - Issue: Refund request, order ORD-8821
 > - Prior resolution attempted: replacement offered and declined
@@ -88,6 +99,7 @@ This is the most commonly misunderstood property. Subagents do not automatically
 Subagents are spawned by the coordinator using the `Task` tool. The coordinator's `allowed_tools` must include `"Task"`. The difference between a good and bad subagent prompt is entirely in how much context is explicitly provided.
 
 > **Quick check:** Compare these two coordinator calls:
+>
 > - `Task: "Analyze the competitive landscape"`
 > - `Task: "Analyze the competitive landscape for AI-powered customer support tools. Focus on pricing models, integration capabilities, and escalation features. The report will be used to justify a budget request to our CTO. Required output format: [schema]"`
 >
@@ -110,11 +122,14 @@ The coordinator is responsible for breaking a high-level goal into well-scoped s
 ---
 
 ### Extension Question
+
 Your multi-agent research system produces a final report that covers five of the seven required topics. The web search subagent, document analysis subagent, and synthesis subagent all report success. Where in the system do you look first, and what would tell you whether the problem is decomposition, context passing, or something else?
 
 ---
 
+<a id="day8"></a>
 ## Day 8 — Hooks: Deterministic Control Over Agent Behavior
+
 **Guide reference:** Chapter 3 (section 3.5), Domain 1 (section 1.5)
 
 Hooks are the mechanism for guaranteeing behavior — not hoping for it. This distinction between deterministic enforcement and probabilistic guidance is one of the most important concepts on the exam.
@@ -131,9 +146,10 @@ A `PostToolUse` hook intercepts a tool result after your code executes the tool 
 ---
 
 **`PreToolUse` hooks: intercept and block outgoing calls**
-A `PreToolUse` hook intercepts a tool call *before* it executes. This is the right place to enforce business rules that must never fail — financial thresholds, compliance checks, safety constraints.
+A `PreToolUse` hook intercepts a tool call _before_ it executes. This is the right place to enforce business rules that must never fail — financial thresholds, compliance checks, safety constraints.
 
 > **Exercise:** Write pseudocode for a `PreToolUse` hook that:
+>
 > 1. Intercepts all calls to `process_refund`
 > 2. Blocks any refund above $500 and redirects to `escalate_to_human` with a reason
 > 3. Allows refunds of $500 or less to proceed normally
@@ -149,6 +165,7 @@ A `PreToolUse` hook intercepts a tool call *before* it executes. This is the rig
 | When to use | Financial operations, compliance, safety | General preferences, formatting, style |
 
 > **Quick check:** For each item below, decide: hook or prompt instruction?
+>
 > 1. "Summarize tool results concisely before presenting them to the user"
 > 2. "Never process a medical record deletion without a supervisor approval code"
 > 3. "Prefer to resolve customer issues before escalating"
@@ -159,16 +176,19 @@ A `PreToolUse` hook intercepts a tool call *before* it executes. This is the rig
 **Choosing hooks over prompts for compliance**
 The rule is simple: when failure has financial, legal, or safety consequences, use a hook. When failure is merely inconvenient or stylistic, a prompt is fine.
 
-> **Quick check:** Your system prompt says: *"Always call `get_customer` before `process_refund` to verify identity."* Audit data shows this is violated 6% of the time — Claude sometimes skips `get_customer` when it's confident about the customer's identity from conversation context. Is 6% acceptable? What is the correct fix?
+> **Quick check:** Your system prompt says: _"Always call `get_customer` before `process_refund` to verify identity."_ Audit data shows this is violated 6% of the time — Claude sometimes skips `get_customer` when it's confident about the customer's identity from conversation context. Is 6% acceptable? What is the correct fix?
 
 ---
 
 ### Extension Question
+
 A team proposes using hooks for everything — every business rule, every preference, every formatting guideline — arguing that determinism is always better than probability. What is the practical downside of this approach, and how would you decide where to draw the line?
 
 ---
 
+<a id="day9"></a>
 ## Day 9 — Connecting Claude to the World: MCP
+
 **Guide reference:** Chapter 4
 
 MCP (Model Context Protocol) is the standard for connecting Claude to external systems — databases, APIs, internal tools, content catalogs. This session covers the protocol's structure and the configuration decisions that affect security and team workflows.
@@ -181,6 +201,7 @@ MCP (Model Context Protocol) is the standard for connecting Claude to external s
 MCP servers expose three types of resources: **Tools** (functions the agent can call to take actions), **Resources** (data the agent can read for context without taking action), and **Prompts** (reusable prompt templates). Each has a distinct purpose.
 
 > **Quick check:** For each of the following, identify whether it should be an MCP Tool, Resource, or Prompt:
+>
 > 1. A list of all open Jira tickets assigned to the current sprint
 > 2. A function to create a new Jira ticket
 > 3. A template for writing a standup summary from a list of completed tasks
@@ -218,16 +239,20 @@ Resources let the agent read context without taking action. A content catalog or
 ---
 
 ### Extension Question
+
 Your team has built a custom internal MCP server for a unique HR workflow. A community MCP server for Slack also exists. How do you decide which to build vs. which to adopt, and what are the maintenance implications of each choice?
 
 ---
 
+<a id="day10"></a>
 ## Day 10 — Week 2 Review
+
 **Guide reference:** Exam Questions 7–9, Domain 1 and Domain 2 notes
 
 This is the Friday morning group session. Complete the Sample Exam Questions individually before meeting, then work through the reasoning together.
 
 **Agenda:**
+
 1. Work through Exam Questions 7–9 as a group. For Question 9 in particular, walk through why each wrong answer is wrong — the reasoning is as important as the correct choice.
 2. Review Domain 1 (Agent Architecture) and Domain 2 (Tool Design and MCP) notes in Part II.
 
@@ -306,6 +331,7 @@ You are architecting a customer support system for an e-commerce company. The sy
 
 **Part A — Agent Design**
 Design the coordinator and at least two specialized subagents. For each agent, specify:
+
 - Its role and responsibilities
 - Its `allowed_tools` list (and justify each inclusion)
 - A system prompt (2–5 sentences) that defines its behavior
@@ -313,6 +339,7 @@ Design the coordinator and at least two specialized subagents. For each agent, s
 
 **Part B — Context Passing**
 Write out the full subagent prompt the coordinator would send to a `draft_resolution` subagent, given:
+
 - Customer: Elena Reyes, CUST-7734
 - Order: ORD-2251, a $320 blender purchased 8 days ago
 - Issue: Item arrived damaged, customer wants a full refund
@@ -321,12 +348,14 @@ Write out the full subagent prompt the coordinator would send to a `draft_resolu
 
 **Part C — Hook Design**
 Write pseudocode for two hooks your system needs:
+
 1. A `PreToolUse` hook enforcing the $500 refund limit
 2. A `PostToolUse` hook that trims the `lookup_order` result from 40 fields to the 5 your agents actually use: `order_id`, `status`, `total`, `items`, `return_eligible`
 
 **Part D — Escalation Scenario**
 Walk through the exact sequence of agent actions and tool calls for this scenario:
-> *Customer: "My order ORD-2251 arrived broken. I want a full refund. And honestly, if you can't sort this out, I want to speak to a manager."*
+
+> _Customer: "My order ORD-2251 arrived broken. I want a full refund. And honestly, if you can't sort this out, I want to speak to a manager."_
 
 At what point, if any, does escalation occur? Is it immediate or after an attempt to resolve? Justify your answer against the escalation rules from Chapter 9 (which you'll cover fully in Week 3, but preview here).
 
@@ -335,4 +364,4 @@ After two weeks in production, data shows the system escalates 40% of cases — 
 
 ---
 
-*← [Back to Week 1](Week1.md) | [Continue to Week 3 →](Week3.md)*
+_← [Back to Week 1](Week1.md) | [Continue to
