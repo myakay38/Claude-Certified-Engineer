@@ -493,7 +493,7 @@ Write two extraction examples that demonstrate how to handle:
 Your first extraction attempt returns `grand_total: 1500.00` but the sum of line items is `1425.00`. `conflict_detected` is `true`. Write the retry prompt you would send to Claude, including everything it needs to correct the extraction.
 
 **Part E — Failure Analysis**
-After running your system on 200 invoices, you find it fails consistently on one type. Describe the diagnostic approach you'd use to identify which document type is failing, what information you'd need, and what technique from this week you'd apply to fix it.
+After running your system on 200 invoices, you find it fails consistently on one type. Your logging system tracks failures, error messages, and input file metadata. Describe the diagnostic approach you'd use to identify the problem, and what technique from this week you'd apply to fix it.
 
 ---
 
