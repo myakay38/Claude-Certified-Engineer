@@ -4,8 +4,13 @@
 
 **Exam domains covered:** Domain 4 (Prompt Engineering and Structured Output, 20%), Domain 5 (Context Management and Reliability, 15%)
 
----
+### Quick Navigation Links
+**Obsidian:** [Day 1](#Day%201%20—%20How%20Claude%20Actually%20Works%20(API%20Fundamentals)), [Day 2](#Day%202%20—%20Prompt%20Engineering%20Making%20Claude%20Do%20It%20Well), [Day 3](#Day%203%20—%20Giving%20Claude%20Abilities%20Tools%20and%20`tool_use`), [Day 4](#Day%204%20—%20Structured%20Output%20Getting%20Reliable%20Data%20Back), [Day 5](#Day%205%20—%20Week%201%20Review)
 
+**Markdown:** [Day 1](#day1), [Day 2](#day2), [Day 3](#day3), [Day 4](#day4), [Day 5](#day5)
+
+---
+<a id="day1"></a>
 ## Day 1 — How Claude Actually Works (API Fundamentals)
 
 **Guide reference:** Chapter 1
@@ -76,6 +81,7 @@ If Claude has no memory between calls, what are the implications for building a 
 
 ---
 
+<a id="day2"></a>
 ## Day 2 — Prompt Engineering: Making Claude Do It Well
 
 **Guide reference:** Chapter 6 (sections 6.1–6.4)
@@ -178,6 +184,7 @@ A colleague argues: "Few-shot examples just waste tokens — Claude already know
 
 ---
 
+<a id="day3"></a>
 ## Day 3 — Giving Claude Abilities: Tools and `tool_use`
 
 **Guide reference:** Chapter 2 (sections 2.1–2.3)
@@ -275,11 +282,14 @@ You have a customer support agent with four tools: `get_customer`, `lookup_order
 
 ---
 
+<a id="day4"></a>
 ## Day 4 — Structured Output: Getting Reliable Data Back
 
 **Guide reference:** Chapter 2 (sections 2.4–2.5), Chapter 6 (sections 6.5–6.6)
 
 This session ties tools and prompt engineering into a complete data extraction pattern. The goal: structured, validated JSON that your downstream code can actually rely on.
+
+> **Key insight before you start:** The reliable way to get structured output from Claude is to define a tool whose `input_schema` is the shape you want, force Claude to call it with `tool_choice: {"type": "tool", "name": "..."}`, and read the `input` field of the resulting `tool_use` block. The tool is fictional — you never execute it. You are using the tool-calling mechanism as a structured output contract. This is why Day 3 and Day 4 are closely linked: `tool_use` is not only for calling external functions, it is also the primary mechanism for guaranteeing structured JSON output. Asking Claude to "respond in JSON" in a regular message is unreliable — Claude can produce malformed JSON, omit required fields, or add commentary outside the block. A tool schema eliminates all of these failure modes at the API level.
 
 ---
 
@@ -391,6 +401,7 @@ A data extraction system achieves 97% accuracy overall — but when you break it
 
 ---
 
+<a id="day5"></a>
 ## Day 5 — Week 1 Review
 
 **Guide reference:** Exam Questions 1–3, Domain 4 notes (sections 4.1–4.4)
@@ -491,7 +502,7 @@ Write two extraction examples that demonstrate how to handle:
 Your first extraction attempt returns `grand_total: 1500.00` but the sum of line items is `1425.00`. `conflict_detected` is `true`. Write the retry prompt you would send to Claude, including everything it needs to correct the extraction.
 
 **Part E — Failure Analysis**
-After running your system on 200 invoices, you find it fails consistently on one type. Describe the diagnostic approach you'd use to identify which document type is failing, what information you'd need, and what technique from this week you'd apply to fix it.
+After running your system on 200 invoices, you find it fails consistently on one type. Your logging system tracks failures, error messages, and input file metadata. Describe the diagnostic approach you'd use to identify the problem, and what technique from this week you'd apply to fix it.
 
 ---
 

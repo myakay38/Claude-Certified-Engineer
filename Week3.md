@@ -4,8 +4,14 @@
 
 **Exam domains covered:** Domain 3 (Claude Code Configuration and Workflows, 20%), Domain 5 (Context Management and Reliability, 15%)
 
+### Quick Navigation Links
+**Obsidian:** [Day 11](#Day%2011%20—%20Claude%20Code%20Configuration%20and%20Developer%20Workflows), [Day 12](#Day%2012%20—%20Claude%20Code%20Planning%20Mode,%20Session%20Management,%20and%20CI/CD), [Day 13](#Day%2013%20—%20Escalation%20and%20Human-in-the-Loop), [Day 14](#Day%2014%20—%20Error%20Handling%20in%20Multi-Agent%20Systems), [Day 15](#Day%2015%20—%20Week%203%20Review)
+
+**Markdown:** [Day 11](#day11), [Day 12](#day12), [Day 13](#day13), [Day 14](#day14), [Day 15](#day15)
+
 ---
 
+<a id="day11"></a>
 ## Day 11 — Claude Code: Configuration and Developer Workflows
 **Guide reference:** Chapter 5 (sections 5.1–5.6)
 
@@ -57,6 +63,7 @@ A company decides to put all Claude Code configuration in the root CLAUDE.md —
 
 ---
 
+<a id="day12"></a>
 ## Day 12 — Claude Code: Planning Mode, Session Management, and CI/CD
 **Guide reference:** Chapter 5 (sections 5.6–5.10)
 
@@ -123,6 +130,7 @@ Your CI pipeline re-reviews a PR after every new commit, but developers complain
 
 ---
 
+<a id="day13"></a>
 ## Day 13 — Escalation and Human-in-the-Loop
 **Guide reference:** Chapter 9
 
@@ -189,6 +197,7 @@ An agent is configured with this escalation instruction: "Escalate to a human if
 
 ---
 
+<a id="day14"></a>
 ## Day 14 — Error Handling in Multi-Agent Systems
 **Guide reference:** Chapter 10
 
@@ -255,6 +264,7 @@ A colleague argues: "We should just wrap every subagent in a try-catch and retur
 
 ---
 
+<a id="day15"></a>
 ## Day 15 — Week 3 Review
 **Guide reference:** Exam Questions 4–6, 10–11, Domain 3 and Domain 5 notes
 

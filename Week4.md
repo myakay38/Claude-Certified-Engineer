@@ -4,8 +4,14 @@
 
 **Exam domains covered:** Domain 1 (Agent Architecture and Orchestration, 27%), Domain 4 (Prompt Engineering and Structured Output, 20%), Domain 5 (Context Management and Reliability, 15%)
 
+### Quick Navigation Links
+**Obsidian:** [Day 16](#Day%2016%20—%20Context%20Management%20in%20Production%20Systems), [Day 17](#Day%2017%20—%20Task%20Decomposition%20Designing%20the%20Shape%20of%20Workflows), [Day 18](#Day%2018%20—%20Scale%20and%20Optimization%20Batch%20Processing%20and%20Built-in%20Tools), [Day 19](#Day%2019%20—%20Full%20Practice%20Exam%20(60%20Questions)), [Day 20](#Day%2020%20—%20Final%20Review%20and%20Exam%20Readiness)
+
+**Markdown:** [Day 16](#day16), [Day 17](#day17), [Day 18](#day18), [Day 19](#day19), [Day 20](#day20)
+
 ---
 
+<a id="day16"></a>
 ## Day 16 — Context Management in Production Systems
 **Guide reference:** Chapters 11 and 12
 
@@ -73,6 +79,7 @@ Your multi-agent system produces a 20-page research report. An executive challen
 
 ---
 
+<a id="day17"></a>
 ## Day 17 — Task Decomposition: Designing the Shape of Workflows
 **Guide reference:** Chapter 8
 
@@ -130,6 +137,7 @@ A colleague argues that dynamic decomposition is always better than fixed pipeli
 
 ---
 
+<a id="day18"></a>
 ## Day 18 — Scale and Optimization: Batch Processing and Built-in Tools
 **Guide reference:** Chapters 7 and 13
 
@@ -202,6 +210,7 @@ The incremental investigation strategy (Grep → Read → Grep → Read) seems s
 
 ---
 
+<a id="day19"></a>
 ## Day 19 — Full Practice Exam (60 Questions)
 **Guide reference:** Practice Test section
 
@@ -224,6 +233,7 @@ Work through the full 60-question practice test on your own during the week. Tim
 
 ---
 
+<a id="day20"></a>
 ## Day 20 — Final Review and Exam Readiness
 **Guide reference:** Full guide, focus on lowest-scoring domains from Day 19
 
