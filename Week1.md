@@ -281,6 +281,8 @@ You have a customer support agent with four tools: `get_customer`, `lookup_order
 
 This session ties tools and prompt engineering into a complete data extraction pattern. The goal: structured, validated JSON that your downstream code can actually rely on.
 
+> **Key insight before you start:** The reliable way to get structured output from Claude is to define a tool whose `input_schema` is the shape you want, force Claude to call it with `tool_choice: {"type": "tool", "name": "..."}`, and read the `input` field of the resulting `tool_use` block. The tool is fictional — you never execute it. You are using the tool-calling mechanism as a structured output contract. This is why Day 3 and Day 4 are closely linked: `tool_use` is not only for calling external functions, it is also the primary mechanism for guaranteeing structured JSON output. Asking Claude to "respond in JSON" in a regular message is unreliable — Claude can produce malformed JSON, omit required fields, or add commentary outside the block. A tool schema eliminates all of these failure modes at the API level.
+
 ---
 
 ### Key Concepts
@@ -491,7 +493,7 @@ Write two extraction examples that demonstrate how to handle:
 Your first extraction attempt returns `grand_total: 1500.00` but the sum of line items is `1425.00`. `conflict_detected` is `true`. Write the retry prompt you would send to Claude, including everything it needs to correct the extraction.
 
 **Part E — Failure Analysis**
-After running your system on 200 invoices, you find it fails consistently on one type. Describe the diagnostic approach you'd use to identify which document type is failing, what information you'd need, and what technique from this week you'd apply to fix it.
+After running your system on 200 invoices, you find it fails consistently on one type. Your logging system tracks failures, error messages, and input file metadata. Describe the diagnostic approach you'd use to identify the problem, and what technique from this week you'd apply to fix it.
 
 ---
 
