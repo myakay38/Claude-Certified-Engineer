@@ -84,8 +84,12 @@ This is the most commonly misunderstood property. Subagents do not automatically
 
 ---
 
-**The `Task` tool for spawning subagents**
-Subagents are spawned by the coordinator using the `Task` tool. The coordinator's `allowed_tools` must include `"Task"`. The difference between a good and bad subagent prompt is entirely in how much context is explicitly provided.
+**The `Agent` tool for spawning subagents**
+Subagents are spawned by the coordinator using the `Agent` tool. (Older materials may call this the `Task` tool — they refer to the same thing.) The coordinator's `allowed_tools` must include `"Agent"`.
+
+Subagents are *defined* via the `agents` parameter in `ClaudeAgentOptions`, each with a name, description, system prompt, and tool list. They are *invoked at runtime* by Claude using the Agent tool. Both pieces are required: defining a subagent without including `"Agent"` in `allowedTools` means Claude can never call it.
+
+The difference between a good and bad subagent prompt is entirely in how much context is explicitly provided.
 
 > **Quick check:** Compare these two coordinator calls:
 > - `Task: "Analyze the competitive landscape"`
@@ -96,9 +100,14 @@ Subagents are spawned by the coordinator using the `Task` tool. The coordinator'
 ---
 
 **Parallel subagent spawning**
-A coordinator can call multiple `Task` tools in a single response. The subagents run concurrently, which dramatically reduces total latency for independent subtasks.
+A coordinator can issue multiple Agent tool calls in a single response. Claude decides whether to run them concurrently or sequentially — the developer does not schedule this. When tasks are independent, Claude will typically run them in parallel, which dramatically reduces total latency.
 
 > **Quick check:** You're building a research system that needs to: search the web for recent news, search an internal document database, and check a competitor pricing API. All three are independent. How do you structure the coordinator's response to run them in parallel? What must be true about the tasks for parallel execution to be safe?
+
+---
+
+**The message stream in a multi-agent query**
+When subagents are active, all messages — from the coordinator and every subagent — arrive in a single stream. Each message has a `parent_tool_use_id` field: `None` means it came from the top-level coordinator; a non-None value ties it to the specific Agent tool call that spawned that subagent. The stream always ends with a `ResultMessage`, whose `result` field contains the coordinator's final synthesized answer. Subagents' individual outputs exist only as intermediate messages in the stream — they are not surfaced separately.
 
 ---
 
@@ -320,19 +329,4 @@ Write out the full subagent prompt the coordinator would send to a `draft_resolu
 - Customer tone: polite but firm
 
 **Part C — Hook Design**
-Write pseudocode for two hooks your system needs:
-1. A `PreToolUse` hook enforcing the $500 refund limit
-2. A `PostToolUse` hook that trims the `lookup_order` result from 40 fields to the 5 your agents actually use: `order_id`, `status`, `total`, `items`, `return_eligible`
-
-**Part D — Escalation Scenario**
-Walk through the exact sequence of agent actions and tool calls for this scenario:
-> *Customer: "My order ORD-2251 arrived broken. I want a full refund. And honestly, if you can't sort this out, I want to speak to a manager."*
-
-At what point, if any, does escalation occur? Is it immediate or after an attempt to resolve? Justify your answer against the escalation rules from Chapter 9 (which you'll cover fully in Week 3, but preview here).
-
-**Part E — Failure Mode Analysis**
-After two weeks in production, data shows the system escalates 40% of cases — well above the 20% target. The most common escalation reason is "unable to make progress." What are the three most likely root causes, and what change would you investigate first?
-
----
-
-*← [Back to Week 1](Week1.md) | [Continue to Week 3 →](Week3.md)*
+Write 
