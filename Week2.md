@@ -271,7 +271,7 @@ This entire structure is fetched once and provided as a Resource, so the agent h
 ---
 
 ### Extension Question
-Your team has built a custom internal MCP server for a unique HR workflow. A community MCP server for Slack also exists. How do you decide which to build vs. which to adopt, and what are the maintenance implications of each choice?
+Your team is building an HR agent and needs to decide whether to build your own MCP server or use a community one. How do you make this decision, and what are the maintenance implications of each choice?
 
 ---
 
